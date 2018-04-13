@@ -5,9 +5,9 @@ from datetime import datetime, time
 
 
 def get_json(url):
-    result = requests.get(url)
-    if result.status_code == 200:
-        return result.json()
+    request_result = requests.get(url)
+    if request_result.ok:
+        return request_result.json()
     return None
 
 
