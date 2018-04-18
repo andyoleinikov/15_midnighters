@@ -4,10 +4,10 @@ from pytz import timezone
 from datetime import datetime
 
 
-def get_data_from_json(url, payload=None):
-    request_result = requests.get(url, params=payload)
-    if request_result.ok:
-        return request_result.json()
+def get_data_from_api(url, payload=None):
+    response = requests.get(url, params=payload)
+    if response.ok:
+        return response.json()
 
 
 def load_attempts(api_url):
@@ -15,7 +15,7 @@ def load_attempts(api_url):
     pages = 1
     while page <= pages:
         payload = {'page': page}
-        page_data = get_data_from_json(api_url, payload)
+        page_data = get_data_from_api(api_url, payload)
         pages = page_data['number_of_pages']
         for record in page_data['records']:
             yield record
@@ -44,10 +44,14 @@ def is_midnighter(record):
 
 if __name__ == '__main__':
     api_url = 'https://devman.org/api/challenges/solution_attempts/'
-    if not get_data_from_json(api_url):
-        sys.exit('API url is unavailable')
     attempts = load_attempts(api_url)
-    midnighters = get_midnighters(attempts)
+    try:
+        midnighters = get_midnighters(attempts)
+    except requests.exceptions.ConnectionError:
+        sys.exit('Server is unavailable')
+    except TypeError as e:
+        sys.exit('API is not working')
+
     print('Users who submit tasks at night:')
     for user in midnighters:
         print(user)
