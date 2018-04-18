@@ -49,8 +49,6 @@ if __name__ == '__main__':
         midnighters = get_midnighters(attempts)
     except requests.exceptions.ConnectionError:
         sys.exit('Server is unavailable')
-    except TypeError as e:
-        sys.exit('API is not working')
 
     print('Users who submit tasks at night:')
     for user in midnighters:
